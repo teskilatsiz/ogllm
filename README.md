@@ -1,48 +1,53 @@
-# OĞLLM: Tarayıcı Tabanlı, Anlamsal Anlama Yeteneğine Sahip Eğitilebilir Sohbet Robotu
+# OĞLLM - Kendi Yapay Zeka Oğlunu Eğit
 
-OĞLLM, kullanıcıların hem metin hem de görsel verilerle eğitebildiği ve test edebildiği, modern bir arayüze sahip, tarayıcı tabanlı bir yapay zeka sohbet robotudur. Bu proje, anahtar kelime eşleştirmesinin ötesine geçerek, **TensorFlow.js** ve **Universal Sentence Encoder (USE)** dil modeli sayesinde cümleler arası anlamsal benzerliği analiz eder.
+**OĞLLM**, bir baba ve oğul ilişkisi teması üzerine kurulmuş, kullanıcıların (baba rolünde) yapay zeka bir "oğulu" eğitebildiği, test edebildiği ve onunla sohbet edebildiği, tarayıcı tabanlı bir sohbet robotudur. Bu proje, basit metin eşleştirmesinin ötesine geçerek, **TensorFlow.js** ile güçlendirilmiş makine öğrenimi sayesinde, öğretilen cümlelerin sadece kelimelerini değil, **anlamını** da kavrar.
 
-Tüm eğitim verileri kullanıcının tarayıcısındaki `localStorage` üzerinde saklanır, bu da tam bir gizlilik ve veri kontrolü sağlar.
+Tüm öğrettikleriniz, yani "oğlunuzun" tüm anıları, sadece sizin tarayıcınızın belleğinde (`localStorage`) güvenli bir şekilde saklanır.
 
-## Temel Özellikler
+![OĞLLM](https://i.hizliresim.com/n2mz04n.png)
 
--   **Anlamsal Analiz ve Arama:** Sistem, cümlelerin sadece kelimelerini değil, anlamsal içeriğini de anlar. TensorFlow.js ve USE modeli sayesinde, "Hava nasıl?" ve "Bugünkü hava durumu hakkında bilgi verir misin?" gibi farklı cümlelerin anlamsal olarak benzer olduğunu tespit edebilir.
+## Oğlunun Yetenekleri
 
--   **Çok Yönlü Eğitim Modülleri:** Model, farklı diyalog türleri için özelleştirilmiş kategoriler aracılığıyla eğitilebilir:
+-   **Derin Anlama Kabiliyeti:** Oğlun, söylediğin cümlelerin sadece kelimelerini değil, asıl niyetini anlar. Ona "Günün nasıl geçti?" diye öğrettiğinde, "Bugün neler yaptın?" diye sorduğunda da seni anlayabilir.
+
+-   **Hayatı Öğretme:** Ona hayatın farklı yönlerini öğretmek için çeşitli kategoriler kullanabilirsin:
     -   Soru-Cevap
     -   Diyalog Akışı
     -   Duygusal Tepki
     -   Fikir ve Görüş
     -   Mizah Yeteneği
 
--   **Görsel Tanıma ve Sorgulama:** Modelin hafızasına bir anahtar kelime ile bir görsel eşleştirilerek "Görsel Tanıma" yeteneği eklenebilir. Kullanıcılar daha sonra bu görseli yükleyerek modelin görseli tanıyıp tanımadığını test edebilir.
+-   **Görsel Hafıza:** Ona bir resmi gösterip ne olduğunu öğretebilirsin. Daha sonra aynı resmi yükleyerek, o anıyı hatırlayıp hatırlamadığını test edebilirsin.
 
--   **İstemci Taraflı Veri Saklama:** Tüm metin ve görsel eğitim verileri, yalnızca kullanıcının yerel tarayıcı deposunda (`localStorage`) saklanır. Herhangi bir sunucuya veri gönderimi yapılmaz, bu da tam gizlilik sağlar.
+-   **Güvenli Hafıza:** Tüm anılarınız ve öğrettiklerin sadece senin tarayıcında kalır. Bilgileriniz asla dışarıya gönderilmez, tamamen size özeldir.
 
--   **Dinamik ve Duyarlı Arayüz:** Arayüz, modern CSS teknikleri kullanılarak tamamen duyarlı (responsive) bir şekilde tasarlanmıştır. Akıcı animasyonlar, kelime kelime cevap oluşturma (streaming response) ve görsel analiz animasyonları gibi özelliklerle kullanıcı deneyimi zenginleştirilmiştir.
+-   **Modern Arayüz:** Minimalist, karanlık tema ve akıcı animasyonlarla zenginleştirilmiş, tüm cihazlarla (mobil, tablet, masaüstü) tam uyumlu bir arayüze sahiptir.
 
-## Teknik Altyapı
+-   **Dinamik Etkileşim:** Cevaplarını kelime kelime düşünerek yazar ve bir görseli analiz ederken bunu sana adım adım gösterir.
 
-Bu proje, herhangi bir sunucu (backend) bağımlılığı olmadan, tamamen istemci tarafında çalışacak şekilde geliştirilmiştir.
+## Kullanılan Teknolojiler
 
--   **Frontend:** HTML5, CSS3 (Flexbox, Grid, Custom Properties), Vanilla JavaScript
--   **Makine Öğrenimi (İstemci Tarafı):**
-    -   **TensorFlow.js:** Tarayıcıda makine öğrenimi modellerini çalıştırmak ve tensör operasyonları yapmak için kullanılır.
-    -   **Universal Sentence Encoder (USE):** Metin verilerini, anlamsal anlamlarını temsil eden 512 boyutlu sayısal vektörlere (embedding) dönüştüren, önceden eğitilmiş bir dil modelidir.
--   **Depolama:** `localStorage` API
+Bu proje, herhangi bir sunucu (backend) bağımlılığı olmadan, tamamen istemci tarafında çalışacak şekilde **HTML5**, **CSS3** ve **Vanilla JavaScript** ile geliştirilmiştir.
 
-## Çalışma Prensibi
+-   **Makine Öğrenimi:**
+    -   **TensorFlow.js:** Tarayıcıda makine öğrenimi modellerini çalıştırmak için kullanılan ana kütüphane.
+    -   **Universal Sentence Encoder (USE):** Cümleleri, anlamsal anlamlarını temsil eden matematiksel vektörlere (embedding) dönüştüren, önceden eğitilmiş dil modeli.
+-   **Arayüz ve Tasarım:**
+    -   Modern CSS (Flexbox, Grid, Custom Properties).
+    -   Mobil cihazlar (özellikle iOS/Safari) için `viewport-fit=cover` ve `env(safe-area-inset-bottom)` ile tam uyumluluk.
 
-1.  **Eğitim (Veri Vektörleştirme):** "Modeli Geliştir" modülü üzerinden bir metin verisi eklendiğinde, Universal Sentence Encoder (USE) bu cümlenin anlamını analiz eder ve onu 512 boyutlu bir anlamsal vektöre dönüştürür. Bu vektör, cümlenin matematiksel bir temsilidir ve ilişkili cevapla birlikte `localStorage`'da saklanır.
+## Oğlunun Beyni Nasıl Çalışır?
 
-2.  **Sorgulama (Anlamsal Karşılaştırma):** Kullanıcı sohbet alanına bir cümle girdiğinde, bu cümlenin de anlamsal vektörü oluşturulur.
+-   **1. Bir Şey Öğrettiğinde (Anlam Yaratma):** Ona öğrettiğin her cümle ("nasılsın?" gibi), Universal Sentence Encoder modeli tarafından anlamsal bir "parmak izine" dönüştürülür. Bu, o cümlenin beynindeki benzersiz matematiksel karşılığıdır ve cevabıyla birlikte hafızasına kaydedilir.
 
-3.  **Benzerlik Skoru (Kosinüs Benzerliği):** Sistem, kullanıcının girdiği cümlenin vektörü ile hafızadaki tüm diğer cümle vektörleri arasındaki anlamsal yakınlığı ölçer. Bu ölçüm, iki vektör arasındaki açıyı temel alan **Kosinüs Benzerliği** (Cosine Similarity) algoritması ile yapılır.
+-   **2. Bir Soru Sorduğunda (Anlam Arama):** Sen bir soru sorduğunda ("keyfin nasıl?" gibi), oğlun önce bu yeni cümlenin de anlamsal parmak izini çıkarır.
 
-4.  **Sonuç Döndürme:** En yüksek benzerlik skoruna sahip olan vektör tespit edilir ve o vektörle ilişkilendirilmiş olan cevap kullanıcıya gösterilir. Bu yöntem, uygulamanın kelime eşleşmesinin ötesinde, cümlenin "niyetini" anlamasına olanak tanır.
+-   **3. En Yakın Anıyı Bulma (Benzerlik Kurma):** Sonra bu yeni parmak izini, hafızasındaki tüm diğer parmak izleriyle karşılaştırır ve anlamsal olarak ona en çok benzeyeni bulur.
 
-## Kurulum ve Çalıştırma
+-   **4. Cevap Verme:** En yakın anıyı bulduğunda, o anıyla birlikte öğrendiği cevabı sana söyler. Bu sayede, kelimeler birebir aynı olmasa bile niyetini anlayarak doğru cevabı verebilir.
+
+## Nasıl Başlanır?
 
 1.  Bu repoyu bilgisayarınıza klonlayın veya dosyaları bir klasöre indirin.
-2.  `index.html` dosyasına herhangi bir modern web tarayıcısı (Chrome, Firefox, Edge vb.) ile çift tıklayarak açın.
-3.  Uygulama ilk açıldığında, Universal Sentence Encoder modelinin internetten yüklenmesi birkaç saniye sürebilir. Arayüzdeki "Yapay zeka hazırlanıyor..." bildirimi kaybolduğunda, sistem kullanıma hazırdır.
+2.  `index.html` dosyasına herhangi bir modern web tarayıcısı ile çift tıklayarak açın.
+3.  Uygulama ilk açıldığında, dil modelinin internetten yüklenmesi birkaç saniye sürebilir. Arayüzdeki "Yapay zeka hazırlanıyor..." bildirimi kaybolduğunda, sohbete başlayabilirsiniz.
