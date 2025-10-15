@@ -59,12 +59,28 @@ html, body {
 .mesajlar::-webkit-scrollbar-thumb { background-color: var(--acik-kutu); border-radius: 3px; }
 
 .mesaj { max-width: 75%; padding: 0.8rem 1.2rem; border-radius: 18px; line-height: 1.5; animation: fadeInUp 0.4s ease forwards; }
-.mesaj.yapay-zeka { background-color: var(--acik-kutu); align-self: flex-start; border-bottom-left-radius: 4px; display: flex; flex-wrap: wrap; }
+.mesaj.yapay-zeka { background-color: var(--acik-kutu); align-self: flex-start; border-bottom-left-radius: 4px; display: flex; flex-wrap: wrap; align-items: center; }
 .mesaj.kullanici { background-color: var(--vurgu-rengi); color: var(--yazi-rengi); align-self: flex-end; border-bottom-right-radius: 4px; padding: 0.5rem; }
 .mesaj.streaming::after { content: ''; width: 8px; height: 1.2rem; background-color: var(--yazi-ikincil); border-radius: 2px; animation: blink 1s infinite; }
 .mesaj .kelime { opacity: 0; transform: translateY(10px); animation: kelimeGiris 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; margin-right: 0.3em; display: inline-block; }
 .mesaj .gorsel-kapsayici { position: relative; display: block; overflow: hidden; border-radius: 14px; }
 .mesaj img { max-width: 100%; display: block; }
+
+.ogret-butonu-mesaj-ici {
+    background: transparent;
+    border: none;
+    color: var(--vurgu-rengi);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px;
+    margin-left: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    transition: color 0.2s;
+}
+.ogret-butonu-mesaj-ici:hover {
+    color: var(--vurgu-rengi-hover);
+}
 
 .gorsel-isleme-ekrani {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;

@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tamEslesme = hafiza.find(h => h.soru === temizMesaj);
         if (tamEslesme) return tamEslesme.cevap;
         const enIyiBenzerlik = await findBestMatch(temizMesaj);
-        return enIyiBenzerlik || "Bunu bana henüz öğretmedin baba. Yukarıdaki butondan yardım alabilirsin.";
+        return enIyiBenzerlik || "Bunu bana henüz öğretmedin baba, <button class='ogret-butonu-mesaj-ici'>öğret bana!</button>";
     }
     
     async function oglunaOgret() {
@@ -134,14 +134,37 @@ document.addEventListener('DOMContentLoaded', () => {
         mesajElementi.classList.add('mesaj', 'yapay-zeka', 'streaming');
         mesajKutusu.appendChild(mesajElementi);
         mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
-        const kelimeler = responseText.split(' ');
+
+        // Split the response into parts: text before the button and the button itself
+        const buttonRegex = /<button class='ogret-butonu-mesaj-ici'>öğret bana!<\/button>/;
+        const parts = responseText.split(buttonRegex);
+        const textBeforeButton = parts[0] || '';
+        const hasButton = parts.length > 1;
+
+        // Split the text part into words for streaming
+        const kelimeler = textBeforeButton.trim().split(' ');
         let kelimeIndex = 0;
+
         const interval = setInterval(() => {
             if (kelimeIndex < kelimeler.length) {
                 const kelimeSpan = document.createElement('span');
                 kelimeSpan.className = 'kelime';
-                kelimeSpan.textContent = kelimeler[kelimeIndex];
+                kelimeSpan.textContent = kelimeler[kelimeIndex] + (kelimeIndex < kelimeler.length - 1 ? ' ' : '');
                 mesajElementi.appendChild(kelimeSpan);
+                mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
+                kelimeIndex++;
+            } else if (hasButton && kelimeIndex === kelimeler.length) {
+                // Render the button after the text
+                const buttonSpan = document.createElement('span');
+                buttonSpan.className = 'kelime';
+                buttonSpan.innerHTML = "<button class='ogret-butonu-mesaj-ici'>öğret bana!</button>";
+                const ogretButonu = buttonSpan.querySelector('.ogret-butonu-mesaj-ici');
+                if (ogretButonu) {
+                    ogretButonu.addEventListener('click', () => {
+                        egitimModali.classList.add('aktif');
+                    });
+                }
+                mesajElementi.appendChild(buttonSpan);
                 mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
                 kelimeIndex++;
             } else {
@@ -168,7 +191,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (mesaj) {
             const metinSpan = document.createElement('span');
-            metinSpan.textContent = mesaj;
+            metinSpan.innerHTML = mesaj;
+            if (mesaj.includes('<button')) {
+                const ogretButonu = metinSpan.querySelector('.ogret-butonu-mesaj-ici');
+                if (ogretButonu) {
+                    ogretButonu.addEventListener('click', () => {
+                        egitimModali.classList.add('aktif');
+                    });
+                }
+            }
             mesajElementi.appendChild(metinSpan);
         }
         mesajKutusu.appendChild(mesajElementi);
