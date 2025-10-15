@@ -5,12 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const onayModali = document.getElementById('onay-modali');
     const modalKapatButonu = document.getElementById('modal-kapat-butonu');
     const egitimPaneli = document.getElementById('egitim-paneli');
+    const modelYukleniyorDiv = document.getElementById('model-yukleniyor');
+    const bilgiAcButonu = document.getElementById('bilgi-ac-butonu');
+    const bilgiModali = document.getElementById('bilgi-modali');
+    const bilgiKapatButonu = document.getElementById('bilgi-kapat-butonu');
     
     const mesajKutusu = document.getElementById('mesaj-kutusu');
     const mesajGirisi = document.getElementById('mesaj-girisi');
     const gonderButonu = document.getElementById('gonder-butonu');
     const kategoriSeciciTetikleyici = document.getElementById('kategori-secici-tetikleyici');
-    const kategoriMenu = document.getElementById('kategori-menu');
+    const kategoriMenusu = document.getElementById('kategori-menusu');
     const aktifKategoriAdi = document.getElementById('aktif-kategori-adi');
     const kategoriAciklamasi = document.getElementById('kategori-aciklamasi');
     const soruGirisi = document.getElementById('soru-girisi');
@@ -25,37 +29,104 @@ document.addEventListener('DOMContentLoaded', () => {
     const gorselAnahtarKelime = document.getElementById('gorsel-anahtar-kelime');
     const gorselSorgulaButonu = document.getElementById('gorsel-sorgula-butonu');
     const gorselSorguInput = document.getElementById('gorsel-sorgu-input');
+    
     let yuklenenGorselDataURL = null;
-    let hafiza = {};
+    let hafiza = [];
+    let model;
 
     const kategoriVerileri = {
-        'soru-cevap': { ad: "Soru-Cevap", tip: 'metin', aciklama: "Ona sorulan spesifik bir soruya nasıl cevap vereceğini öğret.", soruPlaceholder: "Örnek: 'En sevdiğin renk ne?'", cevapPlaceholder: "Örnek: 'Ben turuncu tonlarını severim.'", modalBaslik: "Yeni Bilgi Edinildi!", modalMesaj: "Artık bu soruya nasıl cevap vereceğini biliyor." },
-        'gorsel-hafiza': { ad: "Görsel Hafıza", tip: 'gorsel', aciklama: "Bir anahtar kelime ile bir görseli hafızasına kaydet.", modalBaslik: "Yeni Bir Şey Gördü!", modalMesaj: "Bu görseli artık hatırlayacak." },
-        'diyalog': { ad: "Diyalog Akışı", tip: 'metin', aciklama: "Günlük konuşmalardaki ifadelere nasıl karşılık vereceğini öğret.", soruPlaceholder: "Örnek: 'Bugün hava çok güzel.'", cevapPlaceholder: "Örnek: 'Evet, tam yürüyüş havası baba.'", modalBaslik: "Sosyalleşiyor!", modalMesaj: "Bu diyaloğu hafızasına ekledi." }
+        'soru-cevap': { ad: "Soru-Cevap", tip: 'metin', aciklama: "Ona sorulan spesifik bir soruya nasıl cevap vereceğini öğret.", soruPlaceholder: "Örnek Soru", cevapPlaceholder: "Oğlunun Vermesi Gereken Cevap", modalBaslik: "Aferin Oğluma!", modalMesaj: "Oğlun bu yeni bilgiyi aklına yazdı." },
+        'diyalog': { ad: "Diyalog Akışı", tip: 'metin', aciklama: "Günlük konuşmalardaki ifadelere nasıl karşılık vereceğini öğret.", soruPlaceholder: "Örnek Cümle", cevapPlaceholder: "Oğlunun Karşılığı", modalBaslik: "Aferin Oğluma!", modalMesaj: "Oğlun bu yeni diyaloğu öğrendi." },
+        'tepki': { ad: "Duygusal Tepki", tip: 'metin', aciklama: "Belirli durumlara veya ifadelere nasıl bir tepki vereceğini tanımla.", soruPlaceholder: "Örnek Durum", cevapPlaceholder: "Oğlunun Tepkisi", modalBaslik: "Çok Duygulu!", modalMesaj: "Oğlun artık bu duruma nasıl tepki vereceğini biliyor." },
+        'fikir': { ad: "Fikir ve Görüş", tip: 'metin', aciklama: "Soyut konular hakkında kendi fikirlerini oluşturmasına yardım et.", soruPlaceholder: "Örnek Fikir Konusu", cevapPlaceholder: "Oğlunun Fikri", modalBaslik: "Ne Kadar Akıllı!", modalMesaj: "Oğlunun artık bu konuda bir fikri var." },
+        'mizah': { ad: "Mizah Yeteneği", tip: 'metin', aciklama: "Ona komik cevaplar veya espriler öğreterek sohbeti eğlenceli kıl.", soruPlaceholder: "Örnek Şaka Sorusu", cevapPlaceholder: "Oğlunun Espirisi", modalBaslik: "Çok Komik!", modalMesaj: "Bu espriyi de repertuvarına ekledi." },
+        'gorsel-hafiza': { ad: "Görsel Hafıza Ekle", tip: 'gorsel', aciklama: "Bir anahtar kelime ile bir görseli eşleştirerek oğlunun görsel hafızasını geliştir.", modalBaslik: "Yeni Bir Şey Gördü!", modalMesaj: "Oğlun bu görseli artık hatırlayacak." }
     };
     let aktifKategori = null;
 
+    async function modeliYukleVeBaslat() {
+        model = await use.load();
+        modelYukleniyorDiv.style.display = 'none';
+        mesajGirisi.disabled = false;
+        await hafizayiYukle();
+    }
+    
     function hafizayiKaydet() {
-        try { localStorage.setItem('ogllmHafiza', JSON.stringify(hafiza)); }
+        const saklanacakVeri = hafiza.map(({ soru, cevap }) => ({ soru, cevap }));
+        try { localStorage.setItem('ogllmHafiza', JSON.stringify(saklanacakVeri)); }
         catch (e) { console.error("Hafıza kaydedilemedi, localStorage dolu olabilir.", e); }
     }
 
-    function hafizayiYukle() {
-        const kayitliHafiza = localStorage.getItem('ogllmHafiza');
-        hafiza = kayitliHafiza ? JSON.parse(kayitliHafiza) : { "merhaba": "Merhaba baba!", "nasılsın": "İyiyim babacığım, sen nasılsın?" };
+    async function hafizayiYukle() {
+        const kayitliVeri = localStorage.getItem('ogllmHafiza');
+        let veriler;
+        if (kayitliVeri) {
+            let parsedData = JSON.parse(kayitliVeri);
+            if (Array.isArray(parsedData)) {
+                veriler = parsedData;
+            } else {
+                veriler = Object.entries(parsedData).map(([soru, cevap]) => ({ soru, cevap }));
+            }
+        } else {
+            veriler = [{ soru: "merhaba", cevap: "Merhaba baba!" }];
+        }
+        const sorular = veriler.map(v => v.soru);
+        if (sorular.length > 0) {
+            const embeddings = await model.embed(sorular);
+            hafiza = veriler.map((v, i) => ({ ...v, tensor: embeddings.slice([i, 0], [1, -1]) }));
+        } else {
+            hafiza = [];
+        }
     }
 
-    egitimAcButonu.addEventListener('click', () => egitimModali.classList.add('aktif'));
-    egitimKapatButonu.addEventListener('click', () => egitimModali.classList.remove('aktif'));
-    egitimModali.addEventListener('click', (event) => { if (event.target === egitimModali) egitimModali.classList.remove('aktif'); });
+    async function findBestMatch(userInput) {
+        if (hafiza.length === 0) return null;
+        const inputTensor = await model.embed([userInput]);
+        let bestScore = -1;
+        let bestMatch = null;
+        for (const item of hafiza) {
+            if (item.tensor && !item.cevap.startsWith('data:image')) {
+                const score = tf.tidy(() => tf.matMul(inputTensor, item.tensor, false, true).dataSync()[0]);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = item.cevap;
+                }
+            }
+        }
+        inputTensor.dispose();
+        const BENZERLIK_ESIGI = 0.5;
+        return bestScore > BENZERLIK_ESIGI ? bestMatch : null;
+    }
 
-    function calculateSimilarity(strA, strB) { const clean = (s) => s.toLowerCase().replace(/[^\w\s]/g, ''); const setA = new Set(clean(strA).split(/\s+/)); const setB = new Set(clean(strB).split(/\s+/)); const intersection = new Set([...setA].filter(x => setB.has(x))); const union = new Set([...setA, ...setB]); return intersection.size / union.size; }
-    function findBestMatch(userInput) { let bestScore = 0; let bestMatch = null; const BENZERLIK_ESIGI = 0.4; for (const q in hafiza) { if(typeof hafiza[q] === 'string' && !hafiza[q].startsWith('data:image')) { const score = calculateSimilarity(userInput, q); if (score > bestScore) { bestScore = score; bestMatch = hafiza[q]; } } } return bestScore >= BENZERLIK_ESIGI ? bestMatch : null; }
-    
-    function oglununCevabiniAl(babaninMesaji) {
+    async function oglununCevabiniAl(babaninMesaji) {
         const temizMesaj = babaninMesaji.toLowerCase().trim();
-        if (hafiza[temizMesaj]) return hafiza[temizMesaj];
-        return findBestMatch(temizMesaj) || "Bunu bana henüz öğretmedin baba. Yukarıdaki butondan yardım alabilirsin.";
+        const tamEslesme = hafiza.find(h => h.soru === temizMesaj);
+        if (tamEslesme) return tamEslesme.cevap;
+        const enIyiBenzerlik = await findBestMatch(temizMesaj);
+        return enIyiBenzerlik || "Bunu bana henüz öğretmedin baba. Yukarıdaki butondan yardım alabilirsin.";
+    }
+    
+    async function oglunaOgret() {
+        if (!aktifKategori) { return; }
+        const aktifKategoriVerisi = kategoriVerileri[aktifKategori];
+        let soru, cevap;
+        if (aktifKategoriVerisi.tip === 'gorsel') {
+            soru = gorselAnahtarKelime.value.trim().toLowerCase();
+            cevap = yuklenenGorselDataURL;
+            if(!soru || !cevap) { alert("Lütfen hem anahtar kelimeyi girin hem de bir görsel yükleyin."); return; }
+        } else {
+            soru = soruGirisi.value.trim().toLowerCase();
+            cevap = cevapGirisi.value.trim();
+            if (!soru || !cevap) { alert("Lütfen her iki alanı da doldur."); return; }
+        }
+        const embedding = await model.embed([soru]);
+        hafiza.push({ soru, cevap, tensor: embedding });
+        hafizayiKaydet();
+        egitimModali.classList.remove('aktif');
+        setTimeout(() => modalGoster(aktifKategoriVerisi.modalBaslik, aktifKategoriVerisi.modalMesaj), 400);
+        soruGirisi.value = ''; cevapGirisi.value = ''; gorselAnahtarKelime.value = ''; 
+        yuklenenGorselDataURL = null; gorselYukleInput.value = ''; 
+        gorselOnizleme.src = ''; gorselOnizleme.classList.remove('gorunur');
     }
 
     function streamResponse(responseText) {
@@ -84,18 +155,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const mesajElementi = document.createElement('div');
         mesajElementi.classList.add('mesaj', kimden);
         let islemeEkrani = null;
-
         if (gorselUrl) {
             const kapsayici = document.createElement('div');
             kapsayici.className = 'gorsel-kapsayici';
-            
             const resim = document.createElement('img');
             resim.src = gorselUrl;
-            
             islemeEkrani = document.createElement('div');
             islemeEkrani.className = 'gorsel-isleme-ekrani';
             islemeEkrani.innerHTML = `<div class="tarama-cizgisi"></div><span id="isleme-durum-metni"></span>`;
-
             kapsayici.append(resim, islemeEkrani);
             mesajElementi.appendChild(kapsayici);
         }
@@ -104,37 +171,39 @@ document.addEventListener('DOMContentLoaded', () => {
             metinSpan.textContent = mesaj;
             mesajElementi.appendChild(metinSpan);
         }
-        
         mesajKutusu.appendChild(mesajElementi);
         mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
         return islemeEkrani;
     }
 
-    function mesajGonder() {
+    async function mesajGonder() {
         const mesajMetni = mesajGirisi.value.trim();
         if (mesajMetni === '') return;
         mesajEkle(mesajMetni, 'kullanici');
         mesajGirisi.value = '';
         gonderButonu.classList.remove('aktif');
-        setTimeout(() => { 
-            const cevap = oglununCevabiniAl(mesajMetni);
-            if(cevap && cevap.startsWith('data:image')) {
-                mesajEkle(null, 'yapay-zeka', cevap);
-            } else {
-                streamResponse(cevap);
-            }
-        }, 800);
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const cevap = await oglununCevabiniAl(mesajMetni);
+        if(cevap && cevap.startsWith('data:image')) {
+            mesajEkle(null, 'yapay-zeka', cevap);
+        } else {
+            streamResponse(cevap);
+        }
     }
     
-    mesajGirisi.addEventListener('input', () => {
-        gonderButonu.classList.toggle('aktif', mesajGirisi.value.trim() !== '');
-    });
-
-    function kategoriMenuDoldur() { kategoriMenu.innerHTML = ''; for (const [id, veri] of Object.entries(kategoriVerileri)) { const button = document.createElement('button'); button.dataset.kategori = id; button.textContent = veri.ad; kategoriMenu.appendChild(button); } }
+    function kategoriMenuDoldur() {
+        kategoriMenusu.innerHTML = '';
+        for (const [id, veri] of Object.entries(kategoriVerileri)) {
+            const button = document.createElement('button');
+            button.dataset.kategori = id;
+            button.textContent = veri.ad;
+            kategoriMenusu.appendChild(button);
+        }
+    }
     
-    function kategoriArayuzunuGuncelle(kategoriId) { 
-        if (!kategoriVerileri[kategoriId]) return; 
-        aktifKategori = kategoriId; 
+    function kategoriArayuzunuGuncelle(kategoriId) {
+        if (!kategoriVerileri[kategoriId]) return;
+        aktifKategori = kategoriId;
         const veri = kategoriVerileri[kategoriId];
         aktifKategoriAdi.textContent = veri.ad;
         kategoriAciklamasi.textContent = veri.aciklama;
@@ -145,34 +214,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function modalGoster(baslik, mesaj) { modalBasligi.textContent = baslik; modalMesaji.textContent = mesaj; onayModali.classList.add('aktif'); }
-    
-    function oglunaOgret() {
-        if (!aktifKategori) { return; }
-        const aktifKategoriVerisi = kategoriVerileri[aktifKategori];
-        
-        if (aktifKategoriVerisi.tip === 'gorsel') {
-            const anahtarKelime = gorselAnahtarKelime.value.trim().toLowerCase();
-            if(!anahtarKelime || !yuklenenGorselDataURL) { alert("Lütfen hem anahtar kelimeyi girin hem de bir görsel yükleyin."); return; }
-            hafiza[anahtarKelime] = yuklenenGorselDataURL;
-        } else {
-            const soru = soruGirisi.value.trim().toLowerCase();
-            const cevap = cevapGirisi.value.trim();
-            if (!soru || !cevap) { alert("Lütfen her iki alanı da doldur."); return; }
-            hafiza[soru] = cevap;
-        }
-        hafizayiKaydet();
-        egitimModali.classList.remove('aktif');
-        setTimeout(() => modalGoster(aktifKategoriVerisi.modalBaslik, aktifKategoriVerisi.modalMesaj), 400);
-        soruGirisi.value = ''; cevapGirisi.value = ''; gorselAnahtarKelime.value = ''; yuklenenGorselDataURL = null; gorselYukleInput.value = ''; gorselOnizleme.src = ''; gorselOnizleme.classList.remove('gorunur');
+    function modalGoster(baslik, mesaj) {
+        modalBasligi.textContent = baslik;
+        modalMesaji.textContent = mesaj;
+        onayModali.classList.add('aktif');
     }
+    
+    egitimAcButonu.addEventListener('click', () => egitimModali.classList.add('aktif'));
+    egitimKapatButonu.addEventListener('click', () => egitimModali.classList.remove('aktif'));
+    egitimModali.addEventListener('click', (event) => {
+        if (event.target === egitimModali) {
+            egitimModali.classList.remove('aktif');
+        }
+    });
+
+    bilgiAcButonu.addEventListener('click', () => bilgiModali.classList.add('aktif'));
+    bilgiKapatButonu.addEventListener('click', () => bilgiModali.classList.remove('aktif'));
+    bilgiModali.addEventListener('click', (event) => {
+        if (event.target === bilgiModali) {
+            bilgiModali.classList.remove('aktif');
+        }
+    });
+
+    mesajGirisi.addEventListener('input', () => {
+        gonderButonu.classList.toggle('aktif', mesajGirisi.value.trim() !== '');
+    });
 
     gorselOnizlemeKutusu.addEventListener('click', () => gorselYukleInput.click());
     gorselYukleInput.addEventListener('change', (event) => {
         const dosya = event.target.files[0];
         if(dosya) {
             const reader = new FileReader();
-            reader.onload = (e) => { yuklenenGorselDataURL = e.target.result; gorselOnizleme.src = yuklenenGorselDataURL; gorselOnizleme.classList.add('gorunur'); };
+            reader.onload = (e) => {
+                yuklenenGorselDataURL = e.target.result;
+                gorselOnizleme.src = yuklenenGorselDataURL;
+                gorselOnizleme.classList.add('gorunur');
+            };
             reader.readAsDataURL(dosya);
         }
     });
@@ -186,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const sorguDataURL = e.target.result;
             const islemeEkrani = mesajEkle(null, 'kullanici', sorguDataURL);
             const durumMetni = islemeEkrani.querySelector('#isleme-durum-metni');
-
+            
             setTimeout(() => {
                 islemeEkrani.classList.add('aktif');
                 durumMetni.textContent = 'Görsel işleniyor...';
@@ -198,12 +275,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 let eslesmeBulundu = false;
-                for(const anahtar in hafiza) {
-                    if(hafiza[anahtar] === sorguDataURL) {
+                for(const item of hafiza) {
+                    if(item.cevap === sorguDataURL) {
                         durumMetni.textContent = 'Analiz edildi';
                         setTimeout(() => {
                             islemeEkrani.classList.remove('aktif');
-                            streamResponse(`Bu görseli "${anahtar}" olarak hatırlıyorum.`);
+                            streamResponse(`Bu görseli "${item.soru}" olarak hatırlıyorum.`);
                         }, 500);
                         eslesmeBulundu = true;
                         break;
@@ -211,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 if(!eslesmeBulundu) {
                     durumMetni.textContent = 'Analiz edildi';
-                     setTimeout(() => {
+                    setTimeout(() => {
                         islemeEkrani.classList.remove('aktif');
                         streamResponse("Üzgünüm baba, bu görseli daha önce görmedim.");
                     }, 500);
@@ -222,15 +299,38 @@ document.addEventListener('DOMContentLoaded', () => {
         gorselSorguInput.value = '';
     });
 
-    kategoriSeciciTetikleyici.addEventListener('click', (e) => { e.stopPropagation(); kategoriMenu.classList.toggle('aktif'); kategoriSeciciTetikleyici.classList.toggle('aktif'); });
-    document.addEventListener('click', () => { kategoriMenu.classList.remove('aktif'); kategoriSeciciTetikleyici.classList.remove('aktif'); });
-    kategoriMenu.addEventListener('click', (e) => { e.stopPropagation(); const button = e.target.closest('button'); if (button && button.dataset.kategori) { kategoriArayuzunuGuncelle(button.dataset.kategori); kategoriMenu.classList.remove('aktif'); kategoriSeciciTetikleyici.classList.remove('aktif'); } });
+    kategoriSeciciTetikleyici.addEventListener('click', (e) => {
+        e.stopPropagation();
+        kategoriMenusu.classList.toggle('aktif');
+        kategoriSeciciTetikleyici.classList.toggle('aktif');
+    });
+
+    document.addEventListener('click', () => {
+        kategoriMenusu.classList.remove('aktif');
+        kategoriSeciciTetikleyici.classList.remove('aktif');
+    });
+
+    kategoriMenusu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const button = e.target.closest('button');
+        if (button && button.dataset.kategori) {
+            kategoriArayuzunuGuncelle(button.dataset.kategori);
+            kategoriMenusu.classList.remove('aktif');
+            kategoriSeciciTetikleyici.classList.remove('aktif');
+        }
+    });
+    
     egitButonu.addEventListener('click', oglunaOgret);
     modalKapatButonu.addEventListener('click', () => onayModali.classList.remove('aktif'));
     gonderButonu.addEventListener('click', mesajGonder);
-    mesajGirisi.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); mesajGonder(); } });
+    mesajGirisi.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            mesajGonder();
+        }
+    });
     
-    hafizayiYukle();
     kategoriMenuDoldur();
     kategoriArayuzunuGuncelle('soru-cevap');
+    modeliYukleVeBaslat();
 });
