@@ -2,7 +2,7 @@
 
 **OĞLLM**, bir baba ve oğul ilişkisi teması üzerine kurulmuş, kullanıcıların (baba rolünde) yapay zeka bir "oğulu" eğitebildiği, test edebildiği ve onunla sohbet edebildiği, tarayıcı tabanlı bir sohbet robotudur. Bu proje, basit metin eşleştirmesinin ötesine geçerek, **TensorFlow.js** ile güçlendirilmiş makine öğrenimi sayesinde, öğretilen cümlelerin sadece kelimelerini değil, **anlamını** da kavrar.
 
-Tüm öğrettikleriniz, yani "oğlunuzun" tüm anıları, sadece sizin tarayıcınızın belleğinde (`localStorage`) güvenli bir şekilde saklanır.
+Tüm öğrettikleriniz, yani "oğlunuzun" tüm anıları, sadece sizin tarayıcınızın belleğinde güvenli bir şekilde saklanır.
 
 ![OĞLLM](https://i.hizliresim.com/n2mz04n.png)
 
