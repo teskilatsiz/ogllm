@@ -135,13 +135,11 @@ document.addEventListener('DOMContentLoaded', () => {
         mesajKutusu.appendChild(mesajElementi);
         mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
 
-        // Split the response into parts: text before the button and the button itself
         const buttonRegex = /<button class='ogret-butonu-mesaj-ici'>öğret bana!<\/button>/;
         const parts = responseText.split(buttonRegex);
         const textBeforeButton = parts[0] || '';
         const hasButton = parts.length > 1;
 
-        // Split the text part into words for streaming
         const kelimeler = textBeforeButton.trim().split(' ');
         let kelimeIndex = 0;
 
@@ -154,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mesajKutusu.scrollTop = mesajKutusu.scrollHeight;
                 kelimeIndex++;
             } else if (hasButton && kelimeIndex === kelimeler.length) {
-                // Render the button after the text
+
                 const buttonSpan = document.createElement('span');
                 buttonSpan.className = 'kelime';
                 buttonSpan.innerHTML = "<button class='ogret-butonu-mesaj-ici'>öğret bana!</button>";
